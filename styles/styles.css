@@ -1,0 +1,40 @@
+#chart{
+    padding: 15px;
+    overflow:auto;
+    margin: 15px 20px 0 20px;
+    border: 1px solid rgba(34,36,38,.15);
+}
+#bytes{
+    float:left;
+    width: 850px;
+    height: 600px;
+    padding: 15px;
+    margin: 15px 15px 0 15px;
+    border: 1px solid rgba(34,36,38,.15);
+}
+
+#time{
+    float:left;
+    width: 850px;
+    height: 600px;
+    padding: 15px;
+    margin: 15px 15px 0 15px;
+    border: 1px solid rgba(34,36,38,.15);
+}
+.device{
+    border: 1px solid rgba(34,36,38,.15);
+    padding: 0 15px 15px 15px;
+    margin: 20px;
+    overflow:auto;
+}
+.the_title{
+    display:flex;
+    width: 100%;
+    border-bottom: 2px solid #bce8f1;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0 20px 0;
+}
+h2,h3{
+    text-align:center;
+}
