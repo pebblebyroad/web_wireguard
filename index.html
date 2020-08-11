@@ -6,24 +6,25 @@
     <!-- 引入 echarts.js -->
     <script src="./node_modules/echarts/dist/echarts.min.js"></script>
     <script src="./node_modules/jquery/dist/jquery.js"></script>
-    <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script> -->
     <link href="styles/styles.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
+    <!-- <form method="post"> -->
     <div class="device">
         <div class="the_title">
             <h2>Wireguard 列表</h2>
         </div>
-        <div id="wireguard" class="col-md-4"></div>
+        <div id="wireguard"></div>
     </div>
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
     <div id="chart"> 
         <div id="bytes"></div>
         <div id="time"></div>
     </div> 
-    <script src="scripts/chart_gen.js"></script> 
-</script>        
+    <script src="scripts/chart_gen.js"></script>        
+<!-- </form> -->
 </body>
 </html>

@@ -18,7 +18,8 @@ option1 = {
         }
     },
     legend: {
-        data: ['rx_bytes', 'tx_bytes']
+        data: ['rx_bytes', 'tx_bytes'],
+        left: '50%'
     },
     grid: {
         left: '3%',
@@ -45,13 +46,15 @@ option1 = {
         type: 'slider',
         show: true,
         handleSize: '10',
-        yAxisIndex: [0]
+        yAxisIndex: [0],
+        height:'80%'
     },
     {
         type: 'slider',
         show: true,
         handleSize: '10',
-        xAxisIndex: [0]
+        xAxisIndex: [0],
+        height:'80%'
     },
     {
      //   show: true,
@@ -87,7 +90,7 @@ myChart1.setOption(option1);
 var myChart2 = echarts.init(document.getElementById('time'));
 option2 = {
     title: {
-        text: 'Wireguard 连接时间',
+        text: 'Wireguard Keepalive时间',
         subtext: '数据来自influxdb实时更新'
     },
     tooltip: {
@@ -124,7 +127,8 @@ option2 = {
         }
     },
     legend: {
-        data: ['last_handshake_time', 'persistent_keepalive_interval']
+        data: ['last_handshake_time', 'persistent_keepalive_interval'],
+        left:'50%'
     },
     grid: {
         left: '3%',
@@ -136,11 +140,11 @@ option2 = {
         name: 's',
         type: 'value',
         boundaryGap: [0, 0.01],
-        axisLabel: {
+      /*  axisLabel: {
             formatter: function(value) {
                     return (value/(10**9)).toLocaleString();
             },
-        },
+        },*/
     },
     yAxis: {
         type: 'category',
@@ -151,13 +155,15 @@ option2 = {
         show: true,
         type: 'slider',
         handleSize: '10',
-        yAxisIndex: [0]
+        yAxisIndex: [0],
+        height: '80%'
     },
     {
         type: 'slider',
         show: true,
         handleSize: '10',
-        xAxisIndex: [0]
+        xAxisIndex: [0],
+        height: '80%'
     },
     {
         type: 'inside',
@@ -168,14 +174,15 @@ option2 = {
         yAxisIndex: [0]
     }
     ],
-    series: [
-        {
+    series:
+/*        {
             name: 'last_handshake_time',
             type: 'bar',
             barWidth: '40',
             data: []
             //data: [18203, 23489, 29034, 104970, 131744, 630230]
         },
+*/      
         {
             name: 'persistent_keepalive_interval',
             type: 'bar',
@@ -183,7 +190,6 @@ option2 = {
             data: []
            // data: [19325, 23438, 31000, 121594, 134141, 681807]
         }
-    ]
 };
         // 使用刚指定的配置项和数据显示图表。
 myChart2.setOption(option2);
@@ -193,10 +199,10 @@ myChart2.setOption(option2);
 
 function ajax_call(){
     $.ajax({
-        type : "post",
+        type : "get",
         data : {},
         async : true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
-        url :"http://192.168.1.153:13000/",    //请求路径
+        url :"http://192.168.1.131:11000/grpc-web-api/v1/influxdb?Select=%20select%20*%20FROM%20wg.autogen.wireguard_peer%20order%20by%20time%20desc%20limit%201",
         dataType : "text",        //返回数据形式为json
         success : function(result) {
   //          var x=JSON.stringify(result);
@@ -206,21 +212,23 @@ function ajax_call(){
             //请求成功时执行该函数内容，result即为服务器返回的json对象
             var name=[];
             var allowed_ips=[];
-            var last_handshake_time_ns=[];
-            var persistent_keepalive_interval_ns=[];
-            //var protocol_version=[];
+            var last_handshake_time=[];
+            var persistent_keepalive_interval=[];
+            var protocol_version=[];
             var rx_bytes=[];
             var tx_bytes=[];
+            var endpoint=[];
             if (result) {
                 //取出数据填入数组
-                for(var i=0;i<result.length;i++){
-                    name.push(result[i].fields.name.Kind.string_value);    
-                    allowed_ips.push(result[i].fields.allowed_ips.Kind.string_value);  
-                    last_handshake_time_ns.push(parseInt(result[i].fields.last_handshake_time_ns.Kind.string_value));  
-                    persistent_keepalive_interval_ns.push(parseInt(result[i].fields.persistent_keepalive_interval_ns.Kind.string_value));    
-                //   protocol_version.push(result[i].protocol_version);   
-                    rx_bytes.push(parseInt(result[i].fields.rx_bytes.Kind.string_value));    
-                    tx_bytes.push(parseInt(result[i].fields.tx_bytes.Kind.string_value));    
+                for(var i=0;i<result.response.data.length;i++){
+                    name.push(result.response.data[i].name);    
+                    allowed_ips.push(result.response.data[i].allowed_ips);  
+                    last_handshake_time.push(result.response.data[i].last_handshake_time);  
+                    persistent_keepalive_interval.push(parseInt(result.response.data[i].persistent_keepalive_interval));    
+                    protocol_version.push(result.response.data[i].protocol_version);   
+                    rx_bytes.push(parseInt(result.response.data[i].rx_bytes));    
+                    tx_bytes.push(parseInt(result.response.data[i].tx_bytes));    
+                    endpoint.push(result.response.data[i].endpoint);
                 }
                 myChart1.hideLoading();    //隐藏加载动画
                 myChart1.setOption({        //加载数据图表
@@ -243,31 +251,34 @@ function ajax_call(){
                     yAxis: {
                         data: name
                     },
-                    series: [{
+                    series:
+                    /* {
                         // 根据名字对应到相应的系列
                         name: 'last_handshake_time',
                         data: last_handshake_time_ns
-                    },{
+                    }*/
+                    {
                         // 根据名字对应到相应的系列
                         name: 'persistent_keepalive_interval',
-                        data: persistent_keepalive_interval_ns
-                    }]
+                        data: persistent_keepalive_interval
+                    }
                 });
                 //生成动态数据
                 $("#wireguard").empty(); //先清空原有的模块内部的数据
                 var data_get = '';
                 for(var i=0;i < name.length; i++){
 //                   data_get += get_wireguard(result[i]);
-                     data_get += '<div class="panel panel-info">'+
+                     data_get += '<div class="panel panel-info peer_wireguard">'+
                              '<div class="panel-heading"><h3 class = "panel-title">'+name[i]+'</h3></div>'+
                              '<div class="panel-body">'+
+                             'endpoint='+endpoint[i]+',<br/>'+
                              'allowed_ips='+allowed_ips[i]+',<br/>'+
-                             'last_handshake_time_ns='+last_handshake_time_ns[i]+' ns,<br/>'+
-                             'persistent_keeplive_interval_ns='+persistent_keepalive_interval_ns[i]+' ns,<br/>'+
-             //                'protocol_version='+protocol_version[i]+',<br/>'+
+                             'last_handshake_time='+last_handshake_time[i]+',<br/>'+
+                             'persistent_keeplive_interval ='+persistent_keepalive_interval[i]+' s,<br/>'+
+                             'protocol_version='+protocol_version[i]+',<br/>'+
                              'rx_bytes='+(rx_bytes[i]/1024).toFixed(2)+' kb,<br/>'+
                              'tx_bytes='+(tx_bytes[i]/1024).toFixed(2)+' kb,<br/>'+
-                             '</div><br/></div><br/>';
+                             '</div><br/></div>';
 
                 }
                 $('#wireguard').append(data_get);
@@ -283,4 +294,4 @@ function ajax_call(){
     })
 }
 ajax_call();
-//setInterval(ajax_call,10000);//设置刷新时间
+setInterval(ajax_call,1000);//设置刷新时间

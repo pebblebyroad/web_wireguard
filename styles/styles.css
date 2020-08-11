@@ -35,6 +35,11 @@
     align-items: center;
     margin: 0 0 20px 0;
 }
+.peer_wireguard{
+    width: 500px;
+    float:left;
+    margin: 15px 15px 15px 15px;
+}
 h2,h3{
     text-align:center;
 }
