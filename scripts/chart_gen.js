@@ -45,39 +45,38 @@ option1 = {
     dataZoom: [{
         type: 'slider',
         show: true,
-        handleSize: '10',
+        handleSize: 8,
+        start:80,
+        end:100,
         yAxisIndex: [0],
-        height:'80%'
     },
     {
         type: 'slider',
         show: true,
-        handleSize: '10',
+        handleSize: 8,
+        filterMode: 'empty',
         xAxisIndex: [0],
-        height:'80%'
-    },
-    {
-     //   show: true,
-        type: 'inside',
-        xAxisIndex: [0]
+        height:'70%'
     },
     {
         type: 'inside',
-        yAxisIndex: [0]
+        yAxisIndex: [0],
+        start: 80,
+        end: 100
     }
     ],
     series: [
         {
             name: 'rx_bytes',
             type: 'bar',
-            barWidth: '40',
+     //       barWidth: '40',
           //  data: [18203, 23489, 29034, 104970, 131744, 630230]
             data: []
         },
         {
             name: 'tx_bytes',
             type: 'bar',
-            barWidth: '40',
+       //     barWidth: '40',
          //   data: [19325, 23438, 31000, 121594, 134141, 681807]
             data: []
         }
@@ -99,36 +98,23 @@ option2 = {
             type: 'none'
         },
         formatter: function(params) {
-            var hand_d = [];
-            var hand_h = [];
-            var hand_m = [];
-            var hand_s = [];
-            for(var i =0; i < params.length; i++){
-                params[i].value /= (10**9);
-                hand_d[i] = parseInt(params[i].value/(3600*24));
-                hand_h[i] = parseInt(params[i].value%(3600*24)/3600);
-                hand_m[i] = parseInt(params[i].value%(3600*24)%3600/60);
-                hand_s[i] = parseInt(params[i].value%(3600*24)%3600%60);
-                console.log("value"+hand_d[i]);
-            }
-            return params[0].name + '<br/>' +
+            params.value /= (10**9);
+            var  hand_d = parseInt(params.value/(3600*24));
+            var  hand_h = parseInt(params.value%(3600*24)/3600);
+            var  hand_m = parseInt(params.value%(3600*24)%3600/60);
+            var  hand_s = parseInt(params.value%(3600*24)%3600%60);
+            return params.name + '<br/>' +
                 "<span style='display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color:rgba(36,207,233,0.9)'></span>" +
-                params[0].seriesName + ' : ' +  
-                hand_d[0].toLocaleString() + ' d ' + 
-                hand_h[0].toLocaleString() + ' h ' + 
-                hand_m[0].toLocaleString() + ' m ' + 
-                hand_s[0].toLocaleString() + ' s<br/> ' + 
-                "<span style='display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color:rgba(36,207,233,0.9)'></span>" +
-                params[1].seriesName + ' : ' + 
-                hand_d[1].toLocaleString() + ' d ' + 
-                hand_h[1].toLocaleString() + ' h ' + 
-                hand_m[1].toLocaleString() + ' m ' +
-                hand_s[1].toLocaleString() + ' s<br/> '
+                params.seriesName + ' : ' +  
+                hand_d.toLocaleString() + ' d ' + 
+                hand_h.toLocaleString() + ' h ' + 
+                hand_m.toLocaleString() + ' m ' + 
+                hand_s.toLocaleString() + ' s<br/> '  
         }
     },
     legend: {
         data: ['last_handshake_time', 'persistent_keepalive_interval'],
-        left:'50%'
+        left:'40%'
     },
     grid: {
         left: '3%',
@@ -140,11 +126,6 @@ option2 = {
         name: 's',
         type: 'value',
         boundaryGap: [0, 0.01],
-      /*  axisLabel: {
-            formatter: function(value) {
-                    return (value/(10**9)).toLocaleString();
-            },
-        },*/
     },
     yAxis: {
         type: 'category',
@@ -154,24 +135,24 @@ option2 = {
     dataZoom: [{
         show: true,
         type: 'slider',
-        handleSize: '10',
+        start: 80,
+        end: 100,
+        handleSize: '8',
         yAxisIndex: [0],
-        height: '80%'
     },
     {
         type: 'slider',
         show: true,
+        filterMode: 'empty',
         handleSize: '10',
         xAxisIndex: [0],
-        height: '80%'
+        height: '70%'
     },
     {
         type: 'inside',
-        xAxisIndex: [0]
-    },
-    {
-        type: 'inside',
-        yAxisIndex: [0]
+        yAxisIndex: [0],
+        start: 94,
+        end: 100
     }
     ],
     series:
@@ -202,7 +183,7 @@ function ajax_call(){
         type : "get",
         data : {},
         async : true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
-        url :"http://192.168.1.131:11000/grpc-web-api/v1/influxdb?Select=%20select%20*%20FROM%20wg.autogen.wireguard_peer%20order%20by%20time%20desc%20limit%201",
+        url : "http://192.168.1.131:11000/grpc-web-api/v1/influxdb?Select=SELECT%20*%20FROM%20%22wg%22.%22autogen%22.%22wireguard_peer%22%20WHERE%20time%20%3E%20now()-5m",
         dataType : "text",        //返回数据形式为json
         success : function(result) {
   //          var x=JSON.stringify(result);
@@ -233,7 +214,7 @@ function ajax_call(){
                 myChart1.hideLoading();    //隐藏加载动画
                 myChart1.setOption({        //加载数据图表
                     yAxis: {
-                        data: name
+                        data: allowed_ips
                     },
                     series: [{
                         // 根据名字对应到相应的系列
@@ -249,7 +230,7 @@ function ajax_call(){
                 myChart2.hideLoading();    //隐藏加载动画
                 myChart2.setOption({        //加载数据图表
                     yAxis: {
-                        data: name
+                        data: allowed_ips
                     },
                     series:
                     /* {
